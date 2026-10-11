@@ -1,2 +1,2 @@
 CREATE SCHEMA IF NOT EXISTS silver;
-CREATE TABLE IF NOT EXISTS silver.games AS SELECT * FROM bronze.raw_games;
+CREATE TABLE IF NOT EXISTS silver.games;
