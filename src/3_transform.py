@@ -3,11 +3,12 @@ from sqlalchemy.schema import CreateSchema
 import pandas as pd
 
 data_path = 'data/raw/games.csv'
+data_quality_checks_query = 'sql/checks/data_quality_checks.sql'
+create_silver_table_query = 'sql/silver/create_silver_table.sql'
+insert_silver_data_query = 'sql/silver/insert_silver_data.sql'
 opening_statistics_query = 'sql/gold/opening_statistics.sql'
 result_statistics_query = 'sql/gold/result_statistics.sql'
 time_control_statistics_query = 'sql/gold/time_control_statistics.sql'
-create_silver_table_query = 'sql/silver/create_silver_table.sql'
-
 
 df = pd.read_csv(data_path)
 
@@ -31,13 +32,7 @@ def validate(df):
 print("Raw data:")
 validate(df)
 
-print("Cleaning data...\n")
-silver_df = df.drop_duplicates(subset=['id'], keep='first')
-
-print("Silver layer data:")
-validate(silver_df)
-
-print("Creating silver schema and silver.gamnes table... ", end="")
+print("Creating silver schema and silver.games table... ", end="")
 
 with engine.begin() as con:
     with open(create_silver_table_query) as file:
@@ -46,9 +41,18 @@ with engine.begin() as con:
 
 print("Silver schema and table created succesfully\n")
 
+
 print("Loading data to silver.games table... ", end="")
-silver_df.to_sql("games", engine, schema="silver", if_exists="replace", index=False)
+with engine.begin() as con:
+    with open(insert_silver_data_query) as file:
+        query = text(file.read())
+        con.execute(query)
+
 print("succesfully loaded data to silver.games table\n")
+
+
+print("Silver layer data:")
+# validate(silver_df)
 
 print("Creating gold schema...", end="")
 with engine.begin() as con:

@@ -1,9 +1,10 @@
 CREATE SCHEMA IF NOT EXISTS silver;
+
 CREATE TABLE IF NOT EXISTS silver.games (
     id VARCHAR PRIMARY KEY,
     rated BOOLEAN,
-    created_at TIMESTAMPTZ,
-    last_move_at TIMESTAMPTZ,
+    created_at DOUBLE PRECISION,
+    last_move_at DOUBLE PRECISION,
     turns INTEGER,
     victory_status TEXT,
     winner TEXT,
