@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS gold.opening_statistics AS SELECT
+DROP TABLE IF EXISTS gold.opening_statistics;
+
+CREATE TABLE gold.opening_statistics AS SELECT
 	opening_name,
 	COUNT(*) AS games_count,
 	COUNT(CASE WHEN winner = 'black' THEN 1 END) AS black_wins,

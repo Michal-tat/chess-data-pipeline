@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS gold.time_control_statistics AS SELECT 
+DROP TABLE IF EXISTS gold.time_control_statistics;
+
+CREATE TABLE gold.time_control_statistics AS SELECT 
 	increment_code, 
 	COUNT(*) AS game_count, 
 	ROUND(AVG(turns), 0) AS average_turns, 

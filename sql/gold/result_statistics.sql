@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS gold.result_statistics AS SELECT
+DROP TABLE IF EXISTS gold.result_statistics;
+
+CREATE TABLE gold.result_statistics AS SELECT
 	winner,
 	COUNT(*) AS games_count,
 	ROUND(AVG(turns), 0) as avg_turns,
