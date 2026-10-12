@@ -24,12 +24,12 @@ with engine.begin() as con:
     con.execute(CreateSchema("bronze", if_not_exists=True))
 
 print("importing data to database")
-df.to_sql("raw_games", engine, schema="bronze", if_exists="replace", index=False)
+df.to_sql("games", engine, schema="bronze", if_exists="replace", index=False)
 
 with engine.connect() as con:
-    count = con.execute(text("SELECT COUNT(*) FROM bronze.raw_games;")).scalar()
+    count = con.execute(text("SELECT COUNT(*) FROM bronze.games;")).scalar()
     print("number of rows: ", count)
 
 with engine.connect() as con:
-    sample = con.execute(text("SELECT * FROM bronze.raw_games LIMIT 2;")).fetchall()
+    sample = con.execute(text("SELECT * FROM bronze.games LIMIT 2;")).fetchall()
     print("\nsample data: ", sample)

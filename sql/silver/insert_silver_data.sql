@@ -19,7 +19,7 @@ SELECT
     opening_eco,
     opening_name,
     opening_ply
-FROM bronze.raw_games
+FROM bronze.games
 WHERE 
     NOT (winner = 'draw' AND victory_status != 'draw')
     AND created_at != last_move_at
