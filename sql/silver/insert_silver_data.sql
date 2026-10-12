@@ -5,8 +5,8 @@ SELECT
     DISTINCT ON (id)
     id,
     rated,
-    created_at,
-    last_move_at,
+    TO_TIMESTAMP(created_at / 1000000) AS created_at,
+    TO_TIMESTAMP(last_move_at / 1000000) AS last_move_at,
     turns,
     victory_status,
     winner,
@@ -20,4 +20,7 @@ SELECT
     opening_name,
     opening_ply
 FROM bronze.raw_games
+WHERE 
+    NOT (winner = 'draw' AND victory_status != 'draw')
+    AND created_at != last_move_at
 ORDER BY id;
