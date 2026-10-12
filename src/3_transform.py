@@ -10,8 +10,6 @@ opening_statistics_query = 'sql/gold/opening_statistics.sql'
 result_statistics_query = 'sql/gold/result_statistics.sql'
 time_control_statistics_query = 'sql/gold/time_control_statistics.sql'
 
-df = pd.read_csv(data_path)
-
 USERNAME = "postgres"
 PASSWORD = "admin"
 HOST = "localhost"
@@ -22,15 +20,17 @@ print("Creating engine... ", end="")
 engine = create_engine(f"postgresql+psycopg2://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}")
 print("engine created succesfully\n")
 
-def validate(df):
-    print(f"All rows: {len(df)}")
-    print(f"Unique game IDs: {df['id'].nunique()}")
-    print(f"Duplicated game IDs: {df['id'].duplicated().sum()}")
-    print(f"Fully duplicated rows: {df.duplicated().sum()}")
-    print(f"Null cells: {df.isnull().sum().sum()}\n")
+def validate(engine, schema, table):
+    t = f"{schema}.{table}"
+    with engine.begin() as con:
+        rows = con.execute(text(f"SELECT COUNT(*) FROM {t};")).scalar()
+        unique_ids = con.execute(text(f"SELECT COUNT(DISTINCT(id)) FROM {t}")).scalar()
+        draws_with_winner = con.execute(text(f"SELECT COUNT(*) FROM {t} WHERE winner = 'draw' AND victory_status != 'draw';")).scalar()
+        time_anomaly = con.execute(text(f"SELECT COUNT(*) FROM {t} WHERE created_at = last_move_at;")).scalar()
+        nulls = con.execute(text(f"SELECT COALESCE(SUM(num_nulls(x.*)), 0) FROM {t} x")).scalar()
+    print(f"{schema} table data quality checks:\nrows: {rows}\nunique id's: {unique_ids}\nduplicated id's: {rows-unique_ids}\nrows with draw and winner: {draws_with_winner}\nstart of game same time as last move: {time_anomaly}\nnull values: {nulls}\n")
 
-print("Raw data:")
-validate(df)
+validate(engine, "bronze", "games")
 
 print("Creating silver schema and silver.games table... ", end="")
 
@@ -41,7 +41,6 @@ with engine.begin() as con:
 
 print("Silver schema and table created succesfully\n")
 
-
 print("Loading data to silver.games table... ", end="")
 with engine.begin() as con:
     with open(insert_silver_data_query) as file:
@@ -50,9 +49,7 @@ with engine.begin() as con:
 
 print("succesfully loaded data to silver.games table\n")
 
-
-print("Silver layer data:")
-# validate(silver_df)
+validate(engine, "silver", "games")
 
 print("Creating gold schema...", end="")
 with engine.begin() as con:
