@@ -19,10 +19,11 @@ with engine.connect() as con:
 
 df = pd.read_csv(data_path)
 
+print("creating bronze schema")
 with engine.begin() as con:
     con.execute(CreateSchema("bronze", if_not_exists=True))
 
-
+print("importing data to database")
 df.to_sql("raw_games", engine, schema="bronze", if_exists="replace", index=False)
 
 with engine.connect() as con:
