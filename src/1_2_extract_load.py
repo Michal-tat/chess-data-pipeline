@@ -1,17 +1,20 @@
+import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 from sqlalchemy.schema import CreateSchema
-import psycopg2
 import pandas as pd
 
 data_path = 'data/raw/games.csv'
 
-USERNAME = "postgres"
-PASSWORD = "admin"
-HOST = "localhost"
-PORT = "5432"
-DB_NAME = "lichess_analisys_db"
+#Load variables from .env file
+load_dotenv()
+DB_USERNAME =  os.getenv("DB_USERNAME")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_NAME = os.getenv("DB_NAME")
 
-engine = create_engine(f"postgresql+psycopg2://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}")
+engine = create_engine(f"postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
 
 with engine.connect() as con:
     res = con.execute(text("SELECT version();"))

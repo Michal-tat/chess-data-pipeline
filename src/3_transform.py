@@ -1,3 +1,5 @@
+import os
+from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 from sqlalchemy.schema import CreateSchema
 import pandas as pd
@@ -10,14 +12,16 @@ opening_statistics_query = 'sql/gold/opening_statistics.sql'
 result_statistics_query = 'sql/gold/result_statistics.sql'
 time_control_statistics_query = 'sql/gold/time_control_statistics.sql'
 
-USERNAME = "postgres"
-PASSWORD = "admin"
-HOST = "localhost"
-PORT = "5432"
-DB_NAME = "lichess_analisys_db"
+#Load variables from .env file
+load_dotenv()
+DB_USERNAME =  os.getenv("DB_USERNAME")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_NAME = os.getenv("DB_NAME")
 
 print("Creating engine... ", end="")
-engine = create_engine(f"postgresql+psycopg2://{USERNAME}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}")
+engine = create_engine(f"postgresql+psycopg2://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}")
 print("engine created succesfully\n")
 
 def validate(engine, schema, table):
